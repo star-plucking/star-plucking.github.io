@@ -1,0 +1,1096 @@
+  <!DOCTYPE html>
+  <html lang="zh-CN"  
+      data-theme-mode="auto"
+  >
+  <head>
+  <meta charset="utf-8">
+  
+  
+  
+  <script>window.REIMU_CONFIG = {};window.REIMU_CONFIG.icon_font = '4552607_4k4bc36ef96';window.REIMU_CONFIG.clipboard_tips = {"success":{"zh-CN":"复制成功 (*^▽^*)"},"fail":{"zh-CN":"复制失败 (ﾟ⊿ﾟ)ﾂ"},"copyright":{"enable":false,"count":50,"license_type":"by-nc-sa"}};window.REIMU_CONFIG.clipboard_tips.copyright.content = '本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！';window.REIMU_CONFIG.code_block = {"expand":true};window.REIMU_CONFIG.base = 'http://example.com';window.REIMU_CONFIG.root = '/';window.REIMU_CONFIG.reimu_cursor = {"enable":true,"cursor":{"default":"../images/cursor/reimu-cursor-default.png","pointer":"../images/cursor/reimu-cursor-pointer.png","text":"../images/cursor/reimu-cursor-text.png"},"random":{"enable":true,"base":"../images/cur/cursor","files":{"default":"default.png","pointer":"pointer.png","text":"text.png"},"sets":["01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28"]}};</script>
+  <title>
+    RoboMaster配置CAN-FD | 欢迎来到Star Plucking的博客
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preload" as="style" href="https://fontsapi.zeoseven.com/292/main/result.css" onload="this.rel='stylesheet'" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic|Noto Serif SC:400,400italic,700,700italic&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic|Noto Serif SC:400,400italic,700,700italic&display=swap" media="print" onload="this.media='all'">
+    <link rel="preload" href="//at.alicdn.com/t/c/font_4552607_4k4bc36ef96.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    
+<link rel="stylesheet" href="/css/loader.css">
+
+    <meta name="description" content="can 对于不兼容fdcan的单片机 需要配置的主要有这几个参数：  Bit Timings Parameter  参数列表  Prescaler Time Quanta in Bit Segment 1 （单位time，复数times） Time Quanta in Bit Segment 2 （单位time，复数times） ReSynchronization Jump Width（ 单位t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RoboMaster配置CAN-FD">
+<meta property="og:url" content="http://example.com/2026/01/26/RoboMaster%E9%85%8D%E7%BD%AECAN-FD/index.html">
+<meta property="og:site_name" content="欢迎来到Star Plucking的博客">
+<meta property="og:description" content="can 对于不兼容fdcan的单片机 需要配置的主要有这几个参数：  Bit Timings Parameter  参数列表  Prescaler Time Quanta in Bit Segment 1 （单位time，复数times） Time Quanta in Bit Segment 2 （单位time，复数times） ReSynchronization Jump Width（ 单位t">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-26T13:06:12.000Z">
+<meta property="article:modified_time" content="2026-01-26T13:23:17.310Z">
+<meta property="article:author" content="Star Plucking">
+<meta property="article:tag" content="RoboMaster">
+<meta property="article:tag" content="单片机">
+<meta property="article:tag" content="机器人">
+<meta property="article:tag" content="电控">
+<meta name="twitter:card" content="summary">
+    <link rel="alternate" href="/atom.xml" title="欢迎来到Star Plucking的博客" type="application/atom+xml">
+    <link rel="shortcut icon" href="/images/Rumia.ico">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css" integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei+Zx/1oA/0l8ysE" crossorigin="anonymous">
+      <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css" integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz+YI" crossorigin="anonymous">
+      
+<link rel="stylesheet" href="https://npm.webcache.cn/@waline/client@2.15.8/dist/waline.css" integrity="sha384-vltfZtesCdl6NYVcFVcjEaIi5RpNvZe9t7fXvq8twVtcoy+Ub9QgnxUYJmwOhYCK" crossorigin="anonymous">
+
+    
+<script src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js" integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script>
+
+    
+<link rel="stylesheet" href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css" integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous">
+
+    <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css" integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj+vDDLIL+xBGQU/voDBY5XE2lVh" crossorigin="anonymous">
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+  <body>
+      <div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate">
+          <svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+           M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg>
+      </div>
+      <div class="loading-word">少女祈祷中...</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script>
+<div id="copy-tooltip"></div>
+<div id="heatmap-tooltip"></div>
+
+
+    <div id="container">
+      <div id="wrap">
+        <div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation">
+        <a class="main-nav-link-wrap" href="/">
+            <div class="main-nav-icon icon rotate">
+                &#xe62b;
+            </div>
+          <span class="main-nav-link">首页</span>
+        </span>
+        <a class="main-nav-link-wrap" href="/archives">
+            <div class="main-nav-icon icon rotate">
+                &#xe62b;
+            </div>
+          <span class="main-nav-link">归档</span>
+        </span>
+        <a class="main-nav-link-wrap" href="/about">
+            <div class="main-nav-icon icon rotate">
+                &#xe62b;
+            </div>
+          <span class="main-nav-link">关于</span>
+        </span>
+        <a class="main-nav-link-wrap" href="/friend">
+            <div class="main-nav-icon icon rotate">
+                &#xe62b;
+            </div>
+          <span class="main-nav-link">友链</span>
+        </span>
+    <a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation">
+      <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS 订阅" aria-label="RSS 订阅" target="_blank"></a>
+      <a id="nav-search-btn" class="nav-icon popup-trigger" title="搜索" aria-label="搜索"></a>
+  </nav>
+</div>
+<header id="header" aria-label="Site header">
+    <picture></picture>
+    <img  fetchpriority="high" src="/img/pic1025.webp" alt="RoboMaster配置CAN-FD">
+  <div id="header-outer">
+    <div id="header-title">
+          <span id="logo">
+            <h1 data-aos="slide-up">RoboMaster配置CAN-FD</h1>
+          </span>
+        <h2 id="subtitle-wrap" data-aos="slide-down">
+        </h2>
+    </div>
+  </div>
+</header>
+
+        <div id="content" aria-label="Page content"  class="sidebar-right" >
+          <aside id="sidebar" aria-label="Sidebar">
+  <div class="sidebar-wrapper-container sticky">
+      <meting-js
+        theme="var(--color-link)"
+        id="2093770"
+        server="netease"
+        type="album"
+        
+        
+        
+        
+        
+        
+        
+        
+        list-folded="true"
+        
+      ></meting-js>
+  <div class="sidebar-wrapper">
+    <div class="sidebar-wrap" data-aos="fade-up">
+          <div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#can"><span class="toc-number">1.</span> <span class="toc-text"> can</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bit-timings-parameter"><span class="toc-number">1.1.</span> <span class="toc-text"> Bit Timings Parameter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E5%88%97%E8%A1%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 参数列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 参数计算方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E9%87%87%E6%A0%B7%E7%82%B9"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 关于采样点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AEbasic-parametersadvanced-parameters"><span class="toc-number">1.2.</span> <span class="toc-text"> 其他配置（Basic Parameters&amp;Advanced Parameters）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#fdcan-%E9%9D%9Eh7"><span class="toc-number">2.</span> <span class="toc-text"> FDCAN （非H7）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#for-classic-can"><span class="toc-number">2.1.</span> <span class="toc-text"> For classic can</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#basic-parameters"><span class="toc-number">2.1.1.</span> <span class="toc-text"> Basic Parameters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bit-timings-parameters"><span class="toc-number">2.1.2.</span> <span class="toc-text"> Bit Timings Parameters</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#for-can-fd"><span class="toc-number">2.2.</span> <span class="toc-text"> For CAN-FD</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#basic-parameters-2"><span class="toc-number">2.2.1.</span> <span class="toc-text"> Basic Parameters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bit-timings-parameters-2"><span class="toc-number">2.2.2.</span> <span class="toc-text"> Bit Timings Parameters</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#fdcan-h7"><span class="toc-number">3.</span> <span class="toc-text"> FDCAN （H7）</span></a></li></ol>
+</div>
+</div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img data-src="/avatar/avatar.webp" data-sizes="auto" alt="Star Plucking" class="lazyload">
+  <div class="sidebar-author-name">Star Plucking</div>
+  <div class="sidebar-description">是这样哦~</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div>
+    <div class="sidebar-state-number">4</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>分类</div>
+    <div class="sidebar-state-number">2</div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>标签</div>
+    <div class="sidebar-state-number">5</div>
+  </div>
+</div>
+<div class="sidebar-social" >
+    <div class="icon-github sidebar-social-icon">
+      <a href=https://github.com/star-plucking itemprop="url" target="_blank" aria-label="github" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-bilibili sidebar-social-icon">
+      <a href=https://space.bilibili.com/44519604 itemprop="url" target="_blank" aria-label="bilibili" rel="noopener nofollow noreferrer"></a>
+    </div>
+</div>
+<div class="sidebar-menu">
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/" aria-label="首页"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">首页</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/archives" aria-label="归档"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">归档</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/about" aria-label="关于"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">关于</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/friend" aria-label="友链"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">友链</div>
+      </div>
+</div>
+</div>
+          <div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div>
+    </div>
+  </div>
+  <div class="sidebar-widget">
+  </div>
+  </div>
+</aside>
+
+          <section id="main" aria-label="Main content"><article id="post-RoboMaster配置CAN-FD" class="h-entry article" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner" data-aos="fade-up">
+    <div class="article-meta">
+      <div class="article-date">
+  <span class="article-date-link icon-calendar" data-aos="zoom-in">
+    <time datetime="2026-01-26T13:06:12.000Z" itemprop="datePublished">2026-01-26</time>
+    <time style="display: none;" id="post-update-time">2026-01-26</time>
+  </span>
+</div>
+
+    </div>
+    
+    <div class="hr-line"></div>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+        <h1 id="can"><a class="markdownIt-Anchor" href="#can"></a> can</h1>
+<p>对于不兼容fdcan的单片机</p>
+<p>需要配置的主要有这几个参数：</p>
+<h2 id="bit-timings-parameter"><a class="markdownIt-Anchor" href="#bit-timings-parameter"></a> Bit Timings Parameter</h2>
+<h3 id="参数列表"><a class="markdownIt-Anchor" href="#参数列表"></a> 参数列表</h3>
+<ul>
+<li>Prescaler</li>
+<li>Time Quanta in Bit Segment 1 （单位time，复数times）</li>
+<li>Time Quanta in Bit Segment 2 （单位time，复数times）</li>
+<li>ReSynchronization Jump Width（ 单位time，复数times）</li>
+</ul>
+<p>计算得到的一共有如下几个参数：</p>
+<ul>
+<li>Time Quantum （ns）</li>
+<li>Time for one Bit （nas）</li>
+<li>Baud Rate （bps）（主要关注）</li>
+</ul>
+<h3 id="参数计算方法"><a class="markdownIt-Anchor" href="#参数计算方法"></a> 参数计算方法</h3>
+<p>波特率计算公式：</p>
+<p class="katex-block"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>B</mi><mi>a</mi><mi>u</mi><mi>d</mi><mi>R</mi><mi>a</mi><mi>t</mi><mi>e</mi><mo>=</mo><mfrac><mrow><mi>C</mi><mi>A</mi><mi>N</mi><mi>F</mi><mi>r</mi><mi>e</mi><mi>q</mi><mi>u</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>y</mi><mo>÷</mo><mi>P</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>r</mi></mrow><mrow><mn>1</mn><mo>+</mo><mi>T</mi><mi>i</mi><mi>m</mi><mi>e</mi><mi>S</mi><mi>e</mi><mi>g</mi><mn>1</mn><mo>+</mo><mi>T</mi><mi>i</mi><mi>m</mi><mi>e</mi><mi>S</mi><mi>e</mi><mi>g</mi><mn>2</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">BaudRate = \frac{CANFrequency \div Prescaler}{1 + TimeSeg1+TimeSeg2} 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal">a</span><span class="mord mathnormal">u</span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.2519em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mord mathnormal">im</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mord mathnormal">im</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.13889em;">NF</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mord mathnormal">u</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.03588em;">cy</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">÷</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord mathnormal">resc</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>CANFrequency（FDCAN频率）：CAN时钟频率，查找芯片手册，一般挂载在APB1总线上</p>
+<p>Prescaler（预分频器）：CAN频率还需要除预分频系数得到一个更小的频率 方便我们后续计算。假设TimeSeg1和TimeSeg2的值范围在1-32和1-16 如果CAN频率过大算出来可能达不到我们想要的波特率。</p>
+<h3 id="关于采样点"><a class="markdownIt-Anchor" href="#关于采样点"></a> 关于采样点</h3>
+<p>采样点是在一个 bit 时间里，控制器“读总线电平”的时刻百分比。也就是：这一位走到多少 % 的时候，CAN 才判断 0 / 1。</p>
+<p>一个 CAN bit 由这些段组成（单位都是 tq）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">| SyncSeg |   TimeSeg1   | TimeSeg2 |</span><br><span class="line">|   1     |   Seg1       |  Seg2    |</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SyncSeg：固定 1 tq</li>
+<li>Seg1：可配置</li>
+<li>Seg2：可配置</li>
+</ul>
+<p>其中采样点在Seq1和Seq2的交界处，即采样点位于[SyncSeg+Seg1] 之后。所以采样点计算的标准公式为：</p>
+<p class="katex-block"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>S</mi><mi>a</mi><mi>m</mi><mi>p</mi><mi>l</mi><mi>e</mi><mi>P</mi><mi>o</mi><mi>i</mi><mi>n</mi><mi>t</mi><mo>=</mo><mfrac><mrow><mn>1</mn><mo>+</mo><mi>S</mi><mi>e</mi><mi>g</mi><mn>1</mn></mrow><mrow><mn>1</mn><mo>+</mo><mi>S</mi><mi>e</mi><mi>g</mi><mn>1</mn><mo>+</mo><mi>S</mi><mi>e</mi><mi>g</mi><mn>2</mn></mrow></mfrac><mo>×</mo><mn>100</mn><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">SamplePoint = \frac{1+Seg1}{1+Seg1+Seg2} \times 100 \% 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">am</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord mathnormal">o</span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.2408em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord">100%</span></span></span></span></span></p>
+<p>一般经典CAN常用采样点位87.5%，FDCAN数据段采样点可用75%。这是因为数据段一般速率高，边沿快，一般会高一点。</p>
+<p>所以我们选择参数的要求是 采样率（SMP）为75%左右的同时 BRP（Prescaler（预分频器））的值尽量要小，且Sync Jump Width和TimeSeg2两个参数尽量保证一致且较大。</p>
+<p>Sync Jump Width ≠ 采样点，SJW 是 允许采样点“前后挪动”的最大量，一般有SJW ≤ Seg2。Sync Jump Width和TimeSeg2两个参数尽量保证一致且较大。</p>
+<h2 id="其他配置basic-parametersadvanced-parameters"><a class="markdownIt-Anchor" href="#其他配置basic-parametersadvanced-parameters"></a> 其他配置（Basic Parameters&amp;Advanced Parameters）</h2>
+<table>
+<thead>
+<tr>
+<th>分类</th>
+<th>参数名</th>
+<th>中文含义</th>
+<th>推荐配置</th>
+<th>备注 / 原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础</td>
+<td>Time Triggered Communication Mode</td>
+<td>时间触发通信</td>
+<td><strong>Disable</strong></td>
+<td>RM 不用时间表通信</td>
+</tr>
+<tr>
+<td>基础</td>
+<td>Automatic Bus-Off Management</td>
+<td>自动 Bus-Off 恢复</td>
+<td>Disable（老手）<br>Enable（新手）</td>
+<td>抓错误用的</td>
+</tr>
+<tr>
+<td>基础</td>
+<td>Automatic Wake-Up Mode</td>
+<td>自动唤醒</td>
+<td><strong>Disable</strong></td>
+<td>不用 Sleep</td>
+</tr>
+<tr>
+<td>基础</td>
+<td>Automatic Retransmission</td>
+<td>自动重发</td>
+<td><strong>Enable</strong></td>
+<td>CAN 稳定性核心</td>
+</tr>
+<tr>
+<td>基础</td>
+<td>Receive FIFO Locked Mode</td>
+<td>接收 FIFO 锁定</td>
+<td><strong>Disable</strong></td>
+<td>保留最新数据</td>
+</tr>
+<tr>
+<td>基础</td>
+<td>Transmit FIFO Priority</td>
+<td>发送 FIFO 优先级</td>
+<td><strong>Enable</strong></td>
+<td>控制帧优先</td>
+</tr>
+<tr>
+<td>高级</td>
+<td>Operating Mode</td>
+<td>工作模式</td>
+<td><strong>Normal</strong></td>
+<td>喵帕斯</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>是的就是这么简单</p>
+</blockquote>
+<h1 id="fdcan-非h7"><a class="markdownIt-Anchor" href="#fdcan-非h7"></a> FDCAN （非H7）</h1>
+<blockquote>
+<p>这一部分针对的是兼容FDCAN的非H7的单片机的配置，主要是H7那个配置有点烦人。喵了个咪的。</p>
+</blockquote>
+<h2 id="for-classic-can"><a class="markdownIt-Anchor" href="#for-classic-can"></a> For classic can</h2>
+<h3 id="basic-parameters"><a class="markdownIt-Anchor" href="#basic-parameters"></a> Basic Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>值</th>
+<th>含义</th>
+<th>备注 / 建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clock Divider</td>
+<td>Divide kernel clock by 1</td>
+<td>CAN 外设时钟分频</td>
+<td>1 = 不分频</td>
+</tr>
+<tr>
+<td>Frame Format</td>
+<td>Classic mode</td>
+<td>CAN 帧格式</td>
+<td>经典 CAN（非 CAN FD）</td>
+</tr>
+<tr>
+<td>Mode</td>
+<td>Normal mode</td>
+<td>工作模式</td>
+<td>正常通信</td>
+</tr>
+<tr>
+<td>Auto Retransmission</td>
+<td>Disable</td>
+<td>发送失败是否自动重发</td>
+<td><strong>建议 Enable</strong></td>
+</tr>
+<tr>
+<td>Transmit Pause</td>
+<td>Disable</td>
+<td>连续发送是否插入空闲</td>
+<td>一般保持 Disable</td>
+</tr>
+<tr>
+<td>Protocol Exception</td>
+<td>Disable</td>
+<td>CAN FD 协议异常处理</td>
+<td>Classic CAN 必须关</td>
+</tr>
+<tr>
+<td>Nominal Sync Jump Width</td>
+<td>1</td>
+<td>同步跳转宽度（SJW）</td>
+<td>常用 1~4</td>
+</tr>
+<tr>
+<td>Data Prescaler</td>
+<td>1</td>
+<td>数据段分频</td>
+<td>Classic CAN 可忽略</td>
+</tr>
+<tr>
+<td>Data Sync Jump Width</td>
+<td>1</td>
+<td>数据段 SJW</td>
+<td>Classic CAN 可忽略</td>
+</tr>
+<tr>
+<td>Data Time Seg1</td>
+<td>1</td>
+<td>数据段时间段 1</td>
+<td>Classic CAN 可忽略</td>
+</tr>
+<tr>
+<td>Data Time Seg2</td>
+<td>1</td>
+<td>数据段时间段 2</td>
+<td>Classic CAN 可忽略</td>
+</tr>
+<tr>
+<td>Std Filters Nbr</td>
+<td>0</td>
+<td>标准帧滤波器数量（11 位 ID）</td>
+<td><strong>0 = 收不到标准帧</strong></td>
+</tr>
+<tr>
+<td>Ext Filters Nbr</td>
+<td>0</td>
+<td>扩展帧滤波器数量（29 位 ID）</td>
+<td><strong>0 = 收不到扩展帧</strong></td>
+</tr>
+<tr>
+<td>Tx FIFO Queue Mode</td>
+<td>FIFO mode</td>
+<td>发送缓冲方式</td>
+<td>FIFO = 先进先出</td>
+</tr>
+</tbody>
+</table>
+<p>说明：Frame模式一共有三种工作模式：</p>
+<ul>
+<li>Classic Mode：经典can</li>
+<li>FD mode without BitRate Switching  无比特率切换模式，整个canfd帧使用同样的比特率</li>
+<li>FD mode with BitRate Switching  有比特率切换，可以让数据域以更高的比特率传输，提高传输速率，但是要注意can芯片兼容性</li>
+</ul>
+<p>关于Filter，我们参照草凡佬的这段话：</p>
+<blockquote>
+<p>Std Filters Nbr （标准ID过滤数量） ：这个参数的配置非常容易踩坑，它的参数作用是规定你需要过滤掉标准CANID的数量，通常我们我们不需要过滤任何ID，但这里绝对不能设置为0，如果设置为0则进入不了CAN的中断，必须设置为1即以上，设置为1也不代表我们需要在代码初始化过滤器时过滤掉一个ID，可将一个参数设置为0x00000000，即可不过滤掉任何ID。</p>
+</blockquote>
+<p>所以std设置为1就可以了，ext视情况需要配。</p>
+<h3 id="bit-timings-parameters"><a class="markdownIt-Anchor" href="#bit-timings-parameters"></a> Bit Timings Parameters</h3>
+<p>计算方式与一半CAN完全一致，此处略过了喵</p>
+<p>要注意的是计算完了以后把上边对于点Data xxxx的数据改成和下面仲裁段配置的一致即可。</p>
+<p>需要注意的是此时FDCAN的时钟频率需要在时钟书的“FDCAN Clock Mux”中反复确认喵</p>
+<h2 id="for-can-fd"><a class="markdownIt-Anchor" href="#for-can-fd"></a> For CAN-FD</h2>
+<h3 id="basic-parameters-2"><a class="markdownIt-Anchor" href="#basic-parameters-2"></a> Basic Parameters</h3>
+<blockquote>
+<p>如果不起用BRS（BitRate Switch）的话，配置方法基本同Classic CAN一致。</p>
+</blockquote>
+<p>如果使用BRS的话，配置方法如下：</p>
+<p>首先需要明确的是，在“Basic Parameters”栏目下，Data xxxx相关配置参数之作用于数据段。计算公式为：</p>
+<p class="katex-block"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>B</mi><mi>i</mi><mi>t</mi><mi>r</mi><mi>a</mi><mi>t</mi><mi>e</mi><mo>=</mo><mfrac><mrow><mi>F</mi><mi>D</mi><mi>C</mi><mi>A</mi><msub><mi>N</mi><mrow><mi>f</mi><mi>r</mi><mi>q</mi></mrow></msub></mrow><mrow><mi>P</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>r</mi><mo>×</mo><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>S</mi><mi>e</mi><mi>g</mi><mn>1</mn><mo>+</mo><mi>S</mi><mi>e</mi><mi>g</mi><mn>2</mn><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">Bitrate = \frac{FDCAN_{frq}}{Prescaler \times (1+Seg1+Seg2)}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.2963em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord mathnormal">resc</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">2</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal">A</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight" style="margin-right:0.03588em;">q</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>一定不要忘了采样点的计算喵！</p>
+<h3 id="bit-timings-parameters-2"><a class="markdownIt-Anchor" href="#bit-timings-parameters-2"></a> Bit Timings Parameters</h3>
+<p>这部分的参数只作用于仲裁段喵！配置方式和经典CAN的一样喵！</p>
+<h1 id="fdcan-h7"><a class="markdownIt-Anchor" href="#fdcan-h7"></a> FDCAN （H7）</h1>
+<blockquote>
+<p>H7xx，或者说比较新的芯片的配置页面，会多一些参数，所以这里分开说</p>
+</blockquote>
+<p>主要内容其实和其他FDCAN的配置差不多，多了一下几个Basic Parameter的配置参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>是什么</th>
+<th>推荐值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rx Fifo0 Elmts Nbr</strong></td>
+<td>FIFO0 接收消息个数</td>
+<td><strong>8（或 ≥1）</strong></td>
+<td>0 = FIFO0 不存在</td>
+</tr>
+<tr>
+<td>Rx Fifo0 Elmt Size</td>
+<td>FIFO0 单条数据长度</td>
+<td><strong>8 / 64</strong></td>
+<td>Classic 用 8，FD 用 64</td>
+</tr>
+<tr>
+<td><strong>Rx Fifo1 Elmts Nbr</strong></td>
+<td>FIFO1 接收消息个数</td>
+<td>0 或 8</td>
+<td>不用 FIFO1 可设 0</td>
+</tr>
+<tr>
+<td>Rx Fifo1 Elmt Size</td>
+<td>FIFO1 单条数据长度</td>
+<td>同 FIFO0</td>
+<td></td>
+</tr>
+<tr>
+<td>Rx Buffers Nbr</td>
+<td>Rx Buffer 数量</td>
+<td>0</td>
+<td>一般不用</td>
+</tr>
+<tr>
+<td>Rx Buffer Size</td>
+<td>Rx Buffer 数据长度</td>
+<td>默认</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>是什么</th>
+<th>推荐值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tx Buffers Nbr</td>
+<td>独立 Tx Buffer 数量</td>
+<td>0</td>
+<td>一般不用</td>
+</tr>
+<tr>
+<td><strong>Tx Fifo Queue Elmts Nbr</strong></td>
+<td>发送 FIFO 队列深度</td>
+<td><strong>8（或 ≥1）</strong></td>
+<td>0 = 发不出去</td>
+</tr>
+<tr>
+<td>Tx Fifo Queue Mode</td>
+<td>FIFO / Queue</td>
+<td>FIFO</td>
+<td>FIFO 最常用</td>
+</tr>
+<tr>
+<td>Tx Elmt Size</td>
+<td>单条发送数据长度</td>
+<td>8 / 64</td>
+<td>同 Rx</td>
+</tr>
+<tr>
+<td>Tx Events Nbr</td>
+<td>发送事件记录数量</td>
+<td>0 或 8</td>
+<td>不看发送历史可设 0</td>
+</tr>
+</tbody>
+</table>
+<p>这里面的配置看上面的表格基本就可以看懂了喵</p>
+<p>然后就是关于这个，一路CAN中  在不加延时的情况下，一次最多能发送或接收的最大帧数据包的数量。草凡佬把它叫做CAN收发最大带宽数。</p>
+<p>Clock Calibration（时钟校准），Clock Calibration 是给 CAN FD 的“数据段高速通信”用的，主要在 BRS 打开、速率很高（≥2 Mbps）时才有意义。这个后面再加。用了外部晶振基本不用管。</p>
+
+    </div>
+    <footer class="article-footer">
+        <a data-aos="zoom-in" href="/2026/01/26/RoboMaster%E9%85%8D%E7%BD%AECAN-FD/#comments" class="article-comment-link">
+          <span class="post-comments-count waline-comment-count" data-path="/2026/01/26/RoboMaster%E9%85%8D%E7%BD%AECAN-FD/" itemprop="commentCount"></span>
+          留言
+        </a>
+        <span data-aos="zoom-in" class="article-visitor-link">
+          <span class="waline-pageview-count" data-path="/2026/01/26/RoboMaster%E9%85%8D%E7%BD%AECAN-FD/">0</span>
+          <em class="post-meta-item-text">阅读量</em>
+        </span>
+        <a class="article-category-link" href="/categories/RM/" title="RM" data-aos="zoom-in">RM</a>
+
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/RoboMaster/" rel="tag" title="RoboMaster">RoboMaster</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/%E5%8D%95%E7%89%87%E6%9C%BA/" rel="tag" title="单片机">单片机</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA/" rel="tag" title="机器人">机器人</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/%E7%94%B5%E6%8E%A7/" rel="tag" title="电控">电控</a></li></ul>
+
+    </footer>
+  </div>
+    <nav id="article-nav" aria-label="Article navigation" data-aos="fade-up">
+    <div class="article-nav-link-wrap right">
+        <img data-src="/img/feiwu.webp" data-sizes="auto" alt="我是废物" class="lazyload">
+      <a href="/2026/01/25/%E6%88%91%E6%98%AF%E5%BA%9F%E7%89%A9/" aria-label="后一篇: 我是废物"  title="后一篇: 我是废物"></a>
+      <div class="article-nav-caption">后一篇</div>
+      <h3 class="article-nav-title">
+          我是废物
+      </h3>
+    </div>
+  </nav>
+
+</article>
+
+  <section id="comments" data-aos="fade-up">
+    <div class="comment-header">
+        
+      <h2 class="comment-title">说些什么吧！</h2>
+      <div class="comment-selector">
+        <div class="comment-selector-wrap">
+            <div class="selector-item" data-selector="waline">
+              <span>waline</span>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="comment-content">
+          <div class="comment waline-comment" data-aos="fade-up"
+            id="waline-comment">
+          </div>
+    </div>
+  </section>
+
+</section>
+        </div>
+        <footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info">
+    <div>
+      <span class="icon-copyright"></span>
+        2026
+        <span class="footer-info-sep rotate"></span>
+      Star Plucking
+    </div>
+      <div>
+        基于&nbsp;<a href="https://hexo.io/" rel="noopener nofollow noreferrer" target="_blank">Hexo</a>&nbsp;
+        Theme.<a href="https://github.com/D-Sketon/hexo-theme-reimu" rel="noopener nofollow noreferrer" target="_blank">Reimu</a>
+      </div>
+      <div>
+        <span class="icon-brush"></span>
+        4.1k
+        &nbsp;|&nbsp;
+        <span class="icon-coffee"></span>
+        00:17
+      </div>
+      <div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv">总访问量&nbsp;<span id="busuanzi_value_site_pv"></span></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv">总访客量&nbsp;<span id="busuanzi_value_site_uv"></span></span>
+      </div>
+  </div>
+</footer>
+
+          <div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div>
+        <div id="mask" class="hide"></div>
+      </div>
+      <nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap">
+        <div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#can"><span class="toc-number">1.</span> <span class="toc-text"> can</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bit-timings-parameter"><span class="toc-number">1.1.</span> <span class="toc-text"> Bit Timings Parameter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E5%88%97%E8%A1%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 参数列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 参数计算方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E9%87%87%E6%A0%B7%E7%82%B9"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 关于采样点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AEbasic-parametersadvanced-parameters"><span class="toc-number">1.2.</span> <span class="toc-text"> 其他配置（Basic Parameters&amp;Advanced Parameters）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#fdcan-%E9%9D%9Eh7"><span class="toc-number">2.</span> <span class="toc-text"> FDCAN （非H7）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#for-classic-can"><span class="toc-number">2.1.</span> <span class="toc-text"> For classic can</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#basic-parameters"><span class="toc-number">2.1.1.</span> <span class="toc-text"> Basic Parameters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bit-timings-parameters"><span class="toc-number">2.1.2.</span> <span class="toc-text"> Bit Timings Parameters</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#for-can-fd"><span class="toc-number">2.2.</span> <span class="toc-text"> For CAN-FD</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#basic-parameters-2"><span class="toc-number">2.2.1.</span> <span class="toc-text"> Basic Parameters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bit-timings-parameters-2"><span class="toc-number">2.2.2.</span> <span class="toc-text"> Bit Timings Parameters</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#fdcan-h7"><span class="toc-number">3.</span> <span class="toc-text"> FDCAN （H7）</span></a></li></ol>
+</div>
+</div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img data-src="/avatar/avatar.webp" data-sizes="auto" alt="Star Plucking" class="lazyload">
+  <div class="sidebar-author-name">Star Plucking</div>
+  <div class="sidebar-description">是这样哦~</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div>
+    <div class="sidebar-state-number">4</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>分类</div>
+    <div class="sidebar-state-number">2</div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>标签</div>
+    <div class="sidebar-state-number">5</div>
+  </div>
+</div>
+<div class="sidebar-social" >
+    <div class="icon-github sidebar-social-icon">
+      <a href=https://github.com/star-plucking itemprop="url" target="_blank" aria-label="github" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-bilibili sidebar-social-icon">
+      <a href=https://space.bilibili.com/44519604 itemprop="url" target="_blank" aria-label="bilibili" rel="noopener nofollow noreferrer"></a>
+    </div>
+</div>
+<div class="sidebar-menu">
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/" aria-label="首页"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">首页</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/archives" aria-label="归档"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">归档</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/about" aria-label="关于"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">关于</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/friend" aria-label="友链"></a>
+          <div class="sidebar-menu-icon icon rotate">
+              &#xe62b;
+          </div>
+        <div class="sidebar-menu-link">友链</div>
+      </div>
+</div>
+</div>
+  </div>
+      <div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div>
+</nav>
+
+    </div>
+      <div class="site-search">
+        <div class="reimu-popup popup">
+          <div class="reimu-search">
+            <div class="reimu-search-input-icon"></div>
+            <div id="reimu-search-input"></div>
+            <div class="popup-btn-close"></div>
+          </div>
+          <div class="reimu-results">
+            <div id="reimu-stats"></div>
+            <div id="reimu-hits"></div>
+            <div id="reimu-pagination" class="reimu-pagination"></div>
+          </div>
+          <img class="reimu-bg" src="/images/reimu.png"/>
+        </div>
+      </div>
+    
+<script src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js" integrity="sha384-3gT&#x2F;vsepWkfz&#x2F;ff7PpWNUeMzeWoH3cDhm&#x2F;A8jM7ouoAK0&#x2F;fP&#x2F;9bcHHR5kHq2nf+e" crossorigin="anonymous"></script>
+
+
+<script src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js" integrity="sha384-J08i8An&#x2F;QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/title_welcome.js" data-pjax></script>
+
+
+  
+<script src="/js/random_cursor.js" data-pjax></script>
+
+
+  
+<script src="/js/aos.js"></script>
+
+  <script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', aosInit);
+    } else {
+      aosInit();
+    }
+  </script>
+
+
+<script src="/js/pjax_script.js" data-pjax></script>
+
+
+  
+<script src="/js/generator_search.js" defer></script>
+
+
+
+  <script>
+    var setupFirework = () => {
+      if (!false || !window.matchMedia('(max-width: 768px)').matches) {
+        window.firework && window.firework(JSON.parse('{"excludeElements":["a","button"],"particles":[{"shape":"circle","move":["emit"],"easing":"easeOutExpo","colors":["var(--red-1)","var(--red-2)","var(--red-3)","var(--red-4)"],"number":20,"duration":[1200,1800],"shapeOptions":{"radius":[16,32],"alpha":[0.3,0.5]}},{"shape":"circle","move":["diffuse"],"easing":"easeOutExpo","colors":["var(--red-0)"],"number":1,"duration":[1200,1800],"shapeOptions":{"radius":20,"alpha":[0.2,0.5],"lineWidth":6}}]}'));
+      }
+    }
+  </script>
+  
+<script src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js" integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8+pUoWX8n1rgq282T" crossorigin="anonymous" onload="setupFirework()" defer></script>
+
+
+  
+<script src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js" integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE&#x2F;jMSCxD+jAPU55x&#x2F;jj3wlf" crossorigin="anonymous"></script>
+
+  
+<script src="/js/pjax.js"></script>
+
+
+
+
+
+<div id="lazy-script">
+  <div>
+      
+      
+      <script data-pjax>
+        window.REIMU_POST = {
+          author: "Star Plucking",
+          title: "RoboMaster配置CAN-FD",
+          url: "http://example.com/2026/01/26/RoboMaster%E9%85%8D%E7%BD%AECAN-FD/",
+          excerpt: "",
+          description: "",
+          stripContent: " can 对于不兼容fdcan的单片机 需要配置的主要有这几个参数：  Bit Timings Parameter  参数列表  Prescaler Time Quanta in Bit Segment 1 （单位time，复数times） Time Quanta in Bit Segment 2 （单位time，复数times） ReSynchronization Jump Width（ 单位time，复数times）  计算得到的一共有如下几个参数：  Time Quantum （ns） T",
+          date: "Mon Jan 26 2026 21:06:12 GMT+0800",
+          updated: "Mon Jan 26 2026 21:23:17 GMT+0800",
+          cover: "/img/pic1025.webp",
+        };
+      </script>
+        
+<script src="/js/insert_highlight.js" data-pjax></script>
+
+      
+<script src="/js/tabs.js" data-pjax defer></script>
+
+      <script type="module" data-pjax>
+        (async () => {
+          const PhotoSwipeLightbox = (await safeImport("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js", "sha384-DiL6M/gG+wmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF/N6lrZi/")).default;
+          const initPswp = (gallery, children) => {
+            if (_$$(`${gallery} ${children}`).length > 0) {
+              new PhotoSwipeLightbox({
+                gallery,
+                children,
+                pswpModule: () => safeImport("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8+oTJ7m3DfYEWX1fu1scuS4+s")
+              }).init();
+            }
+          }
+          const pswp = () => {
+            initPswp('.article-entry', 'a.article-gallery-item');
+            initPswp('.article-gallery', 'a.article-gallery-item');
+            window.lightboxStatus = 'done';
+            window.removeEventListener('lightbox:ready', pswp);
+          }
+          if(window.lightboxStatus === 'ready') {
+            pswp()
+          } else {
+            window.addEventListener('lightbox:ready', pswp);
+          }
+        })();
+      </script>
+        
+<script data-pjax>
+  var loadScript = (src, integrity) => {
+    const script = document.createElement('script');
+    script.src = src;
+    if (integrity) script.integrity = integrity;
+    script.crossOrigin = 'anonymous';
+    return script;
+  };
+
+  var commentConfigKeys = ["waline"];
+  var commentConfig = {
+    waline: {
+      enable: true,
+      load: async () => {
+        const container = document.querySelector('.waline-comment');
+        if (!container) return;
+        container.style.display = 'block';
+
+        let walineInit;
+        const walineCdn = 'https://npm.webcache.cn/@waline/client@2.15.8/dist/waline.mjs';
+        const walineIntegrity = 'sha384-9sbqJjrfGjbkI6/PI4nU/MvBfEmkkPC4YK9I4zBeMIf1CVCZdCMH/KinBEAZII/5';
+
+        const module = await safeImport(walineCdn, walineIntegrity);
+        walineInit = module.init;
+
+        window.walineInstance = walineInit({
+          el: '.waline-comment',
+          serverURL: 'https://my-waline-jade.vercel.app/',
+          lang: document.documentElement.lang || 'en',
+          locale: {},
+          emoji: ["https://unpkg.com/@waline/emojis@1.2.0/weibo","https://unpkg.com/@waline/emojis@1.2.0/alus","https://unpkg.com/@waline/emojis@1.2.0/bilibili","https://unpkg.com/@waline/emojis@1.2.0/qq","https://unpkg.com/@waline/emojis@1.2.0/tieba","https://unpkg.com/@waline/emojis@1.2.0/tw-emoji"],
+          meta: ["nick","mail","link"],
+          requiredMeta: ["nick","mail"],
+          wordLimit: JSON.parse('0'),
+          comment: true,
+          pageSize: JSON.parse('10'),
+          dark: 'html[data-theme="dark"]',
+          pageview: JSON.parse('true'),
+        });
+      }
+    },
+  }
+  commentConfig.enable = commentConfigKeys.some(key => commentConfig[key].enable);
+
+  var defaultComment = '';
+  if (commentConfig.enable) {
+    // 1. 首先检查localStorage中是否有保存的评论类型
+    var savedCommentType = localStorage.getItem('commentType');
+    
+    // 2. 如果localStorage中有值且对应的评论系统可用，就使用它
+    if (savedCommentType) {
+      if (commentConfig[savedCommentType]?.enable) {
+        defaultComment = savedCommentType;
+      }
+    }
+    
+    // 3. 如果localStorage无效，检查配置的默认评论系统
+    if (!defaultComment) {
+      var configDefault = 'waline';
+      if (commentConfig[configDefault]?.enable) {
+        defaultComment = configDefault;
+      }
+    }
+    
+    // 4. 如果前两项都无效，按指定顺序找到第一个可用的评论系统
+    if (!defaultComment) {
+      defaultComment = commentConfigKeys.find(sys => commentConfig[sys].enable) || '';
+    }
+  }
+  function loadComments() {
+    if (!commentConfig.enable) return;
+    const loadedComments = {
+      valine: false,
+      waline: false,
+      twikoo: false,
+      gitalk: false,
+      giscus: false
+    };
+
+    // 隐藏所有评论容器
+    const hideAllComments = () => {
+      const commentContainers = document.querySelectorAll('.comment');
+      commentContainers.forEach(container => {
+        container.style.display = 'none';
+      });
+    };
+
+    // 按需加载评论系统
+    const loadCommentSystem = (type) => {
+      if (loadedComments[type]) {
+        // 如果已加载，只需显示对应容器
+        document.querySelector(`.${type}-comment`).style.display = 'block';
+        return;
+      }
+
+      // 根据类型加载对应的脚本
+      commentConfig[type]?.load();
+      loadedComments[type] = true;
+    };
+
+    // 评论组件选择器
+    const changeActiveCommentItems = (item) => {
+      const commentItems = document.querySelectorAll('.selector-item');
+      for (let i = 0; i < commentItems.length; i++) {
+        commentItems[i].classList.remove('active');
+      }
+      item.classList.add('active');
+
+      // 获取要加载的评论系统类型
+      const commentType = item.getAttribute('data-selector');
+
+      // 隐藏所有评论系统
+      hideAllComments();
+
+      // 加载选中的评论系统
+      loadCommentSystem(commentType);
+    };
+
+    const commentInit = () => {
+      // 评论组件选择器点击事件
+      const commentItems = document.querySelectorAll('.selector-item');
+      for (let item of commentItems) {
+        item.addEventListener('click', () => {
+          // 保存选择器状态
+          const commentType = item.getAttribute('data-selector');
+          window.localStorage.setItem('commentType', commentType);
+          // 切换选中状态
+          changeActiveCommentItems(item);
+        });
+      }
+
+      // 检查是否需要加载默认评论系统
+      if (defaultComment) {
+        const defaultSelectorItem = document.querySelector(`[data-selector="${defaultComment}"]`);
+        if (!defaultSelectorItem) return;
+        defaultSelectorItem.style.display = 'block';
+        defaultSelectorItem.classList.add('active');
+        loadCommentSystem(defaultComment);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', commentInit);
+    } else {
+      commentInit();
+    }
+  };
+  loadComments();
+</script>
+
+  </div>
+</div>
+
+
+  <script>
+    console.log(String.raw`%c 
+ ______     ______     __     __    __     __  __    
+/\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+\ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+ \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+  \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                  
+`,'color: #ff5252;')
+    console.log('%c Theme.Reimu v' + '1.11.2' + ' %c https://github.com/D-Sketon/hexo-theme-reimu ', 'color: white; background: #ff5252; padding:5px 0;', 'padding:4px;border:1px solid #ff5252;')
+  </script>
+  
+
+
+  
+<script src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js" integrity="sha384-0M75wtSkhjIInv4coYlaJU83+OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id+S" crossorigin="anonymous" async></script>
+
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+</script>
+
+
+    <script>
+      var setupAPlayer = () => {
+        if (!false || !window.matchMedia('(max-width: 768px)').matches) {
+          if (window.matchMedia('(max-width: 959px)').matches) {
+            const meting = _$('meting-js');
+            if (meting) {
+              meting.setAttribute('fixed', 'true');
+              const aside = meting.parentNode?.parentNode;
+              if (aside?.tagName === 'ASIDE') {
+                meting.parentNode.removeChild(meting);
+                document.body.appendChild(meting);
+              }
+            }
+          }
+        }
+      };
+    </script>
+  
+<script src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js" integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr+h5UfruuRL&#x2F;aORyw+5+HZoU6e" crossorigin="anonymous" defer onload="setupAPlayer()"></script>
+
+    
+<script src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js" integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8+0maanw1S&#x2F;IyB+Y4JG+ZDU7GpKE8" crossorigin="anonymous" defer></script>
+
+
+
+  </body>
+  </html>

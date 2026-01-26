@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="/css/style.css">
 
   <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css" integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei+Zx/1oA/0l8ysE" crossorigin="anonymous">
+      <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css" integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz+YI" crossorigin="anonymous">
       <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/@waline/client@2.15.8/dist/waline.css" integrity="sha384-vltfZtesCdl6NYVcFVcjEaIi5RpNvZe9t7fXvq8twVtcoy+Ub9QgnxUYJmwOhYCK" crossorigin="anonymous">
     
 <script src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js" integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script>
@@ -218,40 +219,27 @@
 
 
     <script>
-    // Detect mobile once to decide fixed mode fallback
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    var setupAPlayer = () => {
-      if (!false || !window.matchMedia('(max-width: 768px)').matches) {
-        if (window.matchMedia('(max-width: 959px)').matches) {
-          const aplayer = _$('#aplayer');
-          if (aplayer) {
-            const aside = aplayer.parentNode?.parentNode;
-            if (aside?.tagName === 'ASIDE') {
-              aplayer.removeAttribute('data-aos');
-              aplayer.parentNode.removeChild(aplayer);
-              document.body.appendChild(aplayer);
+      var setupAPlayer = () => {
+        if (!false || !window.matchMedia('(max-width: 768px)').matches) {
+          if (window.matchMedia('(max-width: 959px)').matches) {
+            const meting = _$('meting-js');
+            if (meting) {
+              meting.setAttribute('fixed', 'true');
+              const aside = meting.parentNode?.parentNode;
+              if (aside?.tagName === 'ASIDE') {
+                meting.parentNode.removeChild(meting);
+                document.body.appendChild(meting);
+              }
             }
           }
         }
-        new APlayer({
-          theme: "var(--color-link)",
-          container: document.getElementById('aplayer'),
-          audio: [{"name":"紅凰優楼","artist":"EastNewSound","url":"/music/紅凰優楼.flac","cover":"/music/Blaze_Out.jpg"}] || [],
-          fixed: isMobile ? true : (true || false),
-          autoplay: false || false,
-          loop: 'all' || 'all',
-          order: 'list' || 'list',
-          preload: 'auto' || 'auto',
-          volume: 0.7 || 0.7,
-          mutex: true || true,
-          listFolded: true || false,
-          lrcType: 0 || 0,
-        });
-      }
-    }
+      };
     </script>
   
 <script src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js" integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr+h5UfruuRL&#x2F;aORyw+5+HZoU6e" crossorigin="anonymous" defer onload="setupAPlayer()"></script>
+
+    
+<script src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js" integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8+0maanw1S&#x2F;IyB+Y4JG+ZDU7GpKE8" crossorigin="anonymous" defer></script>
 
 
 
